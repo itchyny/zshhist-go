@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// ReadAll reads the entire zsh histfile
 func ReadAll(r io.Reader) (histories []History, err error) {
 	var time, elapsed int
 	var cmd string

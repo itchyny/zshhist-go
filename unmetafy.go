@@ -1,5 +1,6 @@
 package zshhist
 
+// Unmetafy a metafied line
 func Unmetafy(str string) string {
 	var j int
 	bs := []byte(str)
