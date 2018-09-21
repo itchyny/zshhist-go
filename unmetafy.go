@@ -1,7 +1,5 @@
 package zshhist
 
-const meta = 0x83
-
 // Unmetafy a metafied line
 func Unmetafy(str string) string {
 	var j int
