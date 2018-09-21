@@ -1,7 +1,8 @@
 package zshhist
 
 func isMeta(c byte) bool {
-	return c == null || c == meta || c == marker || pound <= c && c <= bang || snull <= c && c <= nularg
+	return c == null || c == meta || c == marker ||
+		pound <= c && c <= bang || snull <= c && c <= nularg
 }
 
 // Metafy a string.
