@@ -23,12 +23,12 @@ func main() {
 		panic(err)
 	}
 	defer f.Close()
-	ys, err := zshhist.ReadAll(f)
-	if err != nil {
-		panic(err)
+	d := zshhist.NewDecoder(f)
+	for d.Scan() {
+		fmt.Printf("%+v\n", d.History())
 	}
-	for _, y := range ys {
-		fmt.Printf("%+v\n", y)
+	if d.Err() != nil {
+		panic(d.Err())
 	}
 }
 ```
