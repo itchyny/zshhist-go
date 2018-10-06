@@ -23,7 +23,7 @@ func main() {
 		panic(err)
 	}
 	defer f.Close()
-	d := zshhist.NewDecoder(f)
+	d := zshhist.NewReader(f)
 	for d.Scan() {
 		fmt.Printf("%+v\n", d.History())
 	}

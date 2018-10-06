@@ -8,20 +8,20 @@ import (
 	"strings"
 )
 
-// A Decoder scans histfile and decodes each history.
-type Decoder struct {
+// A Reader scans histfile and decodes each history.
+type Reader struct {
 	s       *bufio.Scanner
 	history History
 	err     error
 }
 
-// NewDecoder creates a new decoder.
-func NewDecoder(r io.Reader) *Decoder {
-	return &Decoder{s: bufio.NewScanner(r)}
+// NewReader creates a new reader.
+func NewReader(r io.Reader) *Reader {
+	return &Reader{s: bufio.NewScanner(r)}
 }
 
 // Scan the reader and reports whether it successfully parses one history or not.
-func (d *Decoder) Scan() bool {
+func (d *Reader) Scan() bool {
 	var time, elapsed int
 	var cmd string
 	var cont bool
@@ -78,11 +78,11 @@ func (d *Decoder) Scan() bool {
 }
 
 // History returns the lastly parsed history.
-func (d *Decoder) History() History {
+func (d *Reader) History() History {
 	return d.history
 }
 
 // Err returns the parse error.
-func (d *Decoder) Err() error {
+func (d *Reader) Err() error {
 	return d.err
 }
