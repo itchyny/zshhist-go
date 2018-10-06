@@ -6,14 +6,17 @@ import (
 	"strings"
 )
 
+// A Writer writes history to a writer.
 type Writer struct {
 	out io.Writer
 }
 
+// NewWriter creates a new writer.
 func NewWriter(w io.Writer) *Writer {
 	return &Writer{out: w}
 }
 
+// Write a history to the writer.
 func (w *Writer) Write(h History) (err error) {
 	_, err = w.out.Write([]byte{':', ' '})
 	if err != nil {
