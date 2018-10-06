@@ -69,8 +69,5 @@ func (w *Writer) Write(h History) (err error) {
 		return
 	}
 	_, err = w.out.Write([]byte{'\n'})
-	if err != nil {
-		return
-	}
-	return nil
+	return err
 }
