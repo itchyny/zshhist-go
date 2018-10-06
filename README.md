@@ -23,12 +23,12 @@ func main() {
 		panic(err)
 	}
 	defer f.Close()
-	d := zshhist.NewReader(f)
-	for d.Scan() {
-		fmt.Printf("%+v\n", d.History())
+	r := zshhist.NewReader(f)
+	for r.Scan() {
+		fmt.Printf("%+v\n", r.History())
 	}
-	if d.Err() != nil {
-		panic(d.Err())
+	if r.Err() != nil {
+		panic(r.Err())
 	}
 }
 ```
