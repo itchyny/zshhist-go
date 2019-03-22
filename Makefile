@@ -1,18 +1,21 @@
+export GO111MODULE=on
+
 .PHONY: all
-all: lint test
+all: test lint
+
+.PHONY: deps
+deps:
+	go get -d -v ./...
 
 .PHONY: test
-test: testdeps
+test: deps
 	go test -v ./...
-
-.PHONY: testdeps
-testdeps:
-	go get -d -v -t ./...
 
 .PHONY: lint
 lint: lintdeps
-	golint -set_exit_status *.go
+	go vet ./...
+	golint -set_exit_status ./...
 
 .PHONY: lintdeps
 lintdeps:
-	command -v golint >/dev/null || go get -u golang.org/x/lint/golint
+	GO111MODULE=off go get -u golang.org/x/lint/golint
