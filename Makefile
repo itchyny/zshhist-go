@@ -18,4 +18,4 @@ lint: lintdeps
 
 .PHONY: lintdeps
 lintdeps:
-	GO111MODULE=off go get -u golang.org/x/lint/golint
+	cd && go get golang.org/x/lint/golint
