@@ -1,0 +1,13 @@
+echo hello, world!
+echo hello\
+echo world\
+
+go version
+echo ぃ�ゃ�にぃ�は、七�烵��
+echo a\
+b\
+c\
+
+echo "あぃ�ぃ�ぃ�ぃ�\
+ぃ�ぃ�ぃ�ぃ�ぃ�\
+ぃ�ぃ�ぃ�ぃ�ぃ�"

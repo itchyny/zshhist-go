@@ -23,6 +23,17 @@ func TestReader(t *testing.T) {
 				{1537448453, 0, "echo \"あいうえお\nかきくけこ\nさしすせそ\""},
 			},
 		},
+		"standard": {
+			file: "standard.histfile",
+			histories: []History{
+				{0, 0, "echo hello, world!"},
+				{0, 0, "echo hello\necho world\n"},
+				{0, 0, "go version"},
+				{0, 0, "echo こんにちは、世界"},
+				{0, 0, "echo a\nb\nc\n"},
+				{0, 0, "echo \"あいうえお\nかきくけこ\nさしすせそ\""},
+			},
+		},
 	}
 
 	for name, tt := range testCases {
