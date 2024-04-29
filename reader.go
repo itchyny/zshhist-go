@@ -41,31 +41,17 @@ func (d *Reader) Scan() bool {
 			}
 			continue
 		}
-		if !strings.HasPrefix(line, ": ") {
-			d.err = fmt.Errorf("invalid histfile line: %q", line)
-			return false
+
+		if strings.HasPrefix(line, ": ") {
+			time, elapsed, cmd, err = extended(line)
+			if err != nil {
+				d.err = err
+				return false
+			}
+		} else {
+			cmd = line
 		}
-		i := strings.IndexRune(line[2:], ':')
-		if i < 0 {
-			d.err = fmt.Errorf("invalid histfile line: %q", line)
-			return false
-		}
-		time, err = strconv.Atoi(line[2 : i+2])
-		if err != nil {
-			d.err = fmt.Errorf("invalid histfile line: %q", line)
-			return false
-		}
-		j := strings.IndexRune(line[2:], ';')
-		if j < 0 {
-			d.err = fmt.Errorf("invalid histfile line: %q", line)
-			return false
-		}
-		elapsed, err = strconv.Atoi(line[i+3 : j+2])
-		if err != nil {
-			d.err = fmt.Errorf("invalid histfile line: %q", line)
-			return false
-		}
-		cmd = line[j+3:]
+
 		if strings.HasSuffix(cmd, "\\") {
 			cont = true
 			cmd = cmd[:len(cmd)-1]
@@ -85,4 +71,30 @@ func (d *Reader) History() History {
 // Err returns the parse error.
 func (d *Reader) Err() error {
 	return d.err
+}
+
+func extended(line string) (time, elapsed int, cmd string, err error) {
+	i := strings.IndexRune(line[2:], ':')
+	if i < 0 {
+		return time, elapsed, cmd, fmt.Errorf("invalid histfile line: %q", line)
+	}
+
+	time, err = strconv.Atoi(line[2 : i+2])
+	if err != nil {
+		return time, elapsed, cmd, fmt.Errorf("invalid histfile line: %q", line)
+	}
+
+	j := strings.IndexRune(line[2:], ';')
+	if j < 0 {
+		return time, elapsed, cmd, fmt.Errorf("invalid histfile line: %q", line)
+	}
+
+	elapsed, err = strconv.Atoi(line[i+3 : j+2])
+	if err != nil {
+		return time, elapsed, cmd, fmt.Errorf("invalid histfile line: %q", line)
+	}
+
+	cmd = line[j+3:]
+
+	return time, elapsed, cmd, nil
 }

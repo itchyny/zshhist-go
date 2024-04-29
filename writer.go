@@ -18,26 +18,12 @@ func NewWriter(w io.Writer) *Writer {
 
 // Write a history to the writer.
 func (w *Writer) Write(h History) (err error) {
-	_, err = w.out.Write([]byte{':', ' '})
-	if err != nil {
-		return
+	if h.Time != 0 {
+		if err = w.extended(h); err != nil {
+			return err
+		}
 	}
-	_, err = w.out.Write([]byte(strconv.Itoa(h.Time)))
-	if err != nil {
-		return
-	}
-	_, err = w.out.Write([]byte{':'})
-	if err != nil {
-		return
-	}
-	_, err = w.out.Write([]byte(strconv.Itoa(h.Elapsed)))
-	if err != nil {
-		return
-	}
-	_, err = w.out.Write([]byte{';'})
-	if err != nil {
-		return
-	}
+
 	start, idx := 0, strings.IndexRune(h.Command, '\n')
 	for {
 		if idx < 0 {
@@ -59,4 +45,29 @@ func (w *Writer) Write(h History) (err error) {
 	}
 	_, err = w.out.Write([]byte{'\n'})
 	return err
+}
+
+func (w *Writer) extended(h History) (err error) {
+	_, err = w.out.Write([]byte{':', ' '})
+	if err != nil {
+		return err
+	}
+	_, err = w.out.Write([]byte(strconv.Itoa(h.Time)))
+	if err != nil {
+		return err
+	}
+	_, err = w.out.Write([]byte{':'})
+	if err != nil {
+		return err
+	}
+	_, err = w.out.Write([]byte(strconv.Itoa(h.Elapsed)))
+	if err != nil {
+		return err
+	}
+	_, err = w.out.Write([]byte{';'})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
