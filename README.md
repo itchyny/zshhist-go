@@ -12,28 +12,29 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/itchyny/zshhist-go"
-	"github.com/mitchellh/go-homedir"
 )
 
 func main() {
-	path, err := homedir.Expand("~/.histfile")
+	dir, err := os.UserHomeDir()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	f, err := os.Open(path)
+	f, err := os.Open(filepath.Join(dir, ".histfile"))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defer f.Close()
 	r := zshhist.NewReader(f)
 	for r.Scan() {
 		fmt.Printf("%+v\n", r.History())
 	}
-	if r.Err() != nil {
-		panic(r.Err())
+	if err := r.Err(); err != nil {
+		log.Fatal(err)
 	}
 }
 ```
