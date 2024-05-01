@@ -21,13 +21,13 @@ func NewReader(r io.Reader) *Reader {
 }
 
 // Scan the reader and reports whether it successfully parses one history or not.
-func (d *Reader) Scan() bool {
+func (r *Reader) Scan() bool {
 	var time, elapsed int
 	var cmd string
 	var cont bool
 	var err error
-	for d.s.Scan() {
-		line := Unmetafy(d.s.Text())
+	for r.s.Scan() {
+		line := Unmetafy(r.s.Text())
 		if cont {
 			if strings.HasSuffix(line, "\\") {
 				line = line[:len(line)-1]
@@ -36,7 +36,7 @@ func (d *Reader) Scan() bool {
 			}
 			cmd += "\n" + line
 			if !cont {
-				d.history, d.err = History{time, elapsed, cmd}, nil
+				r.history, r.err = History{time, elapsed, cmd}, nil
 				return true
 			}
 			continue
@@ -45,7 +45,7 @@ func (d *Reader) Scan() bool {
 		if strings.HasPrefix(line, ": ") {
 			time, elapsed, cmd, err = extended(line)
 			if err != nil {
-				d.err = err
+				r.err = err
 				return false
 			}
 		} else {
@@ -56,7 +56,7 @@ func (d *Reader) Scan() bool {
 			cont = true
 			cmd = cmd[:len(cmd)-1]
 		} else {
-			d.history, d.err = History{time, elapsed, cmd}, nil
+			r.history, r.err = History{time, elapsed, cmd}, nil
 			return true
 		}
 	}
@@ -64,13 +64,13 @@ func (d *Reader) Scan() bool {
 }
 
 // History returns the lastly parsed history.
-func (d *Reader) History() History {
-	return d.history
+func (r *Reader) History() History {
+	return r.history
 }
 
 // Err returns the parse error.
-func (d *Reader) Err() error {
-	return d.err
+func (r *Reader) Err() error {
+	return r.err
 }
 
 func extended(line string) (time, elapsed int, cmd string, err error) {
