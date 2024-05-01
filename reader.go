@@ -20,6 +20,13 @@ func NewReader(r io.Reader) *Reader {
 	return &Reader{s: bufio.NewScanner(r)}
 }
 
+// ErrInvalidLine is the error on invalid histfile line.
+type ErrInvalidLine string
+
+func (e ErrInvalidLine) Error() string {
+	return fmt.Sprintf("zshhist: invalid histfile line: %q", string(e))
+}
+
 // Scan the reader and reports whether it successfully parses one history or not.
 func (r *Reader) Scan() bool {
 	var time, elapsed int
@@ -43,9 +50,9 @@ func (r *Reader) Scan() bool {
 		}
 
 		if strings.HasPrefix(line, ": ") {
-			time, elapsed, cmd, err = extended(line)
+			time, elapsed, cmd, err = parseExtended(line[2:])
 			if err != nil {
-				r.err = err
+				r.err = ErrInvalidLine(line)
 				return false
 			}
 		} else {
@@ -73,28 +80,24 @@ func (r *Reader) Err() error {
 	return r.err
 }
 
-func extended(line string) (time, elapsed int, cmd string, err error) {
-	i := strings.IndexRune(line[2:], ':')
-	if i < 0 {
-		return time, elapsed, cmd, fmt.Errorf("invalid histfile line: %q", line)
+func parseExtended(line string) (time, elapsed int, cmd string, err error) {
+	var i, j int
+	if i = strings.IndexByte(line, ':'); i < 0 {
+		err = ErrInvalidLine(line)
+		return
 	}
-
-	time, err = strconv.Atoi(line[2 : i+2])
-	if err != nil {
-		return time, elapsed, cmd, fmt.Errorf("invalid histfile line: %q", line)
+	if time, err = strconv.Atoi(line[:i]); err != nil {
+		err = ErrInvalidLine(line)
+		return
 	}
-
-	j := strings.IndexRune(line[2:], ';')
-	if j < 0 {
-		return time, elapsed, cmd, fmt.Errorf("invalid histfile line: %q", line)
+	if j = strings.IndexByte(line[i:], ';'); j < 0 {
+		err = ErrInvalidLine(line)
+		return
 	}
-
-	elapsed, err = strconv.Atoi(line[i+3 : j+2])
-	if err != nil {
-		return time, elapsed, cmd, fmt.Errorf("invalid histfile line: %q", line)
+	if elapsed, err = strconv.Atoi(line[i+1 : i+j]); err != nil {
+		err = ErrInvalidLine(line)
+		return
 	}
-
-	cmd = line[j+3:]
-
-	return time, elapsed, cmd, nil
+	cmd = line[i+j+1:]
+	return
 }
