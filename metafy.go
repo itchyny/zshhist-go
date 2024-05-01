@@ -4,56 +4,48 @@ const (
 	null   = 0x00
 	meta   = 0x83
 	marker = 0xa2
-	pound  = 0x84
-	nularg = 0xa1
-	bang   = 0x9c
-	snull  = 0x9d
 )
 
-func isMeta(c byte) bool {
-	return c == null || c == meta || c == marker ||
-		pound <= c && c <= bang || snull <= c && c <= nularg
+var isMeta [256]bool
+
+func init() {
+	isMeta[null] = true
+	for b := meta; b <= marker; b++ {
+		isMeta[b] = true
+	}
 }
 
 // Metafy a string.
 func Metafy(str string) string {
-	bs := []byte(str)
-	var metaCount int
-	for _, b := range bs {
-		if isMeta(b) {
-			metaCount++
+	bs, i := []byte(str)[:0], 0
+	for j := 0; j < len(str); j++ {
+		if b := str[j]; isMeta[b] {
+			bs = append(bs, str[i:j]...)
+			bs = append(bs, meta, b^0x20)
+			i = j + 1
 		}
 	}
-	if metaCount == 0 {
+	if i == 0 {
 		return str
 	}
-	cs := make([]byte, len(bs)+metaCount)
-	var j int
-	for _, b := range bs {
-		if isMeta(b) {
-			cs[j] = meta
-			j++
-			cs[j] = b ^ 32
-		} else {
-			cs[j] = b
-		}
-		j++
-	}
-	return string(cs)
+	bs = append(bs, str[i:]...)
+	return string(bs)
 }
 
-// Unmetafy a metafied line
+// Unmetafy a metafied string.
 func Unmetafy(str string) string {
-	var j int
-	bs := []byte(str)
-	for i := 0; i < len(bs); i++ {
-		if bs[i] == meta {
-			i++
-			bs[j] = bs[i] ^ 32
-		} else {
-			bs[j] = bs[i]
+	bs, i := []byte(str)[:0], 0
+	for j := 0; j < len(str); j++ {
+		if str[j] == meta {
+			bs = append(bs, str[i:j]...)
+			j++
+			bs = append(bs, str[j]^0x20)
+			i = j + 1
 		}
-		j++
 	}
-	return string(bs[:j])
+	if i == 0 {
+		return str
+	}
+	bs = append(bs, str[i:]...)
+	return string(bs)
 }
