@@ -1,3 +1,3 @@
 module github.com/itchyny/zshhist-go
 
-go 1.12
+go 1.20
