@@ -3,7 +3,7 @@ all: test lint
 
 .PHONY: test
 test:
-	go test -v ./...
+	go test -v -race ./...
 
 .PHONY: lint
 lint: $(GOBIN)/staticcheck
