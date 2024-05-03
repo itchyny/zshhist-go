@@ -29,7 +29,7 @@ func (e ErrInvalidLine) Error() string {
 
 // Scan the reader and reports whether it successfully parses one history or not.
 func (r *Reader) Scan() bool {
-	var time, elapsed int
+	var time, elapsed int64
 	var cmd string
 	var cont bool
 	var err error
@@ -80,13 +80,13 @@ func (r *Reader) Err() error {
 	return r.err
 }
 
-func parseExtended(line string) (time, elapsed int, cmd string, err error) {
+func parseExtended(line string) (time, elapsed int64, cmd string, err error) {
 	var i, j int
 	if i = strings.IndexByte(line, ':'); i < 0 {
 		err = ErrInvalidLine(line)
 		return
 	}
-	if time, err = strconv.Atoi(line[:i]); err != nil {
+	if time, err = strconv.ParseInt(line[:i], 10, 64); err != nil {
 		err = ErrInvalidLine(line)
 		return
 	}
@@ -94,7 +94,7 @@ func parseExtended(line string) (time, elapsed int, cmd string, err error) {
 		err = ErrInvalidLine(line)
 		return
 	}
-	if elapsed, err = strconv.Atoi(line[i+1 : i+j]); err != nil {
+	if elapsed, err = strconv.ParseInt(line[i+1:i+j], 10, 64); err != nil {
 		err = ErrInvalidLine(line)
 		return
 	}

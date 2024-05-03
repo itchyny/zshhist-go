@@ -56,8 +56,8 @@ func (w *Writer) Write(h History) (err error) {
 
 func (w *Writer) writeExtended(h History) (err error) {
 	buf := append(w.buf[:0], ':', ' ')
-	buf = append(strconv.AppendInt(buf, int64(h.Time), 10), ':')
-	buf = append(strconv.AppendInt(buf, int64(h.Elapsed), 10), ';')
+	buf = append(strconv.AppendInt(buf, h.Time, 10), ':')
+	buf = append(strconv.AppendInt(buf, h.Elapsed, 10), ';')
 	_, err = w.w.Write(buf)
 	return
 }
