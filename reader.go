@@ -31,42 +31,26 @@ func (e ErrInvalidLine) Error() string {
 func (r *Reader) Scan() bool {
 	var time, elapsed int64
 	var cmd string
-	var cont bool
+	var cont, extended bool
 	var err error
+
 	for r.s.Scan() {
 		line := Unmetafy(r.s.Text())
 		if cont {
-			if strings.HasSuffix(line, "\\") {
-				line = line[:len(line)-1]
-			} else {
-				cont = false
-			}
 			cmd += "\n" + line
-			if !cont {
-				r.history, r.err = History{time, elapsed, cmd}, nil
-				return true
-			}
-			continue
-		}
-
-		if strings.HasPrefix(line, ": ") {
-			time, elapsed, cmd, err = parseExtended(line[2:])
+		} else if cmd, extended = strings.CutPrefix(line, ": "); extended {
+			time, elapsed, cmd, err = parseExtended(cmd)
 			if err != nil {
 				r.err = ErrInvalidLine(line)
 				return false
 			}
-		} else {
-			cmd = line
 		}
-
-		if strings.HasSuffix(cmd, "\\") {
-			cont = true
-			cmd = cmd[:len(cmd)-1]
-		} else {
+		if cmd, cont = strings.CutSuffix(cmd, "\\"); !cont {
 			r.history, r.err = History{time, elapsed, cmd}, nil
 			return true
 		}
 	}
+
 	return false
 }
 
